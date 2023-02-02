@@ -127,7 +127,7 @@ public class GeneticAlgorithm  {
             reproduction.clear();
             sumFitness = 0;
 
-           // System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
+            System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
             generation++;
         }
 
@@ -137,12 +137,12 @@ public class GeneticAlgorithm  {
             System.out.println("Solution found at generation: " + solutionGeneration + " Solution: " + solutionChromosome.getChromosomeStringBuilder().toString());
         }
 
-        printPopulation(chromosomes);
+       // printPopulation(chromosomes);
 
-/*
+
         for(int i = 0; i < averageFitnessPerGeneration.length; i ++) {
             System.out.print(averageFitnessPerGeneration[i] + ",");
-        } */
+        }
 
     }
 

@@ -1,9 +1,9 @@
 public class Chromosome {
-    private StringBuilder genes = new StringBuilder("01");
+    private StringBuilder genes = new StringBuilder("012345679");
     private StringBuilder chromosomeStringBuilder;
     private int fitness;
 
-    public static final String solution = "111111111111111111111111111111";
+    public static final String solution = "643076163900584556552605539514";
 
     private int chromosomeLength;
     public Chromosome (int chromosomeLength) {
@@ -21,14 +21,9 @@ public class Chromosome {
     public void calculateFitness() {
         fitness = 0;
         for(int i = 0; i < chromosomeStringBuilder.length(); i++) {
-            if(chromosomeStringBuilder.charAt(i) == '1') {
+            if(chromosomeStringBuilder.charAt(i) == solution.charAt(i)) {
                 fitness++;
             }
-        }
-
-        // solution contains only 0's
-        if(fitness == 0) {
-            fitness = 2 * (chromosomeLength);
         }
 
         this.fitness = fitness;
