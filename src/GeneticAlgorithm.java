@@ -50,6 +50,9 @@ public class GeneticAlgorithm  {
             chromosomes.add(temp);
         }
 
+        chromosomes.set(0, new Chromosome( new StringBuilder("000000000000000000000000000000")));
+        chromosomes.get(0).calculateFitness();
+
 
         while ((generation < generations)) {
 
@@ -124,13 +127,17 @@ public class GeneticAlgorithm  {
             reproduction.clear();
             sumFitness = 0;
 
-            System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
+           // System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
             generation++;
         }
 
-        System.out.println("Solution found at generation: " + solutionGeneration + " Solution: " + solutionChromosome.getChromosomeStringBuilder().toString());
+        if(solutionChromosome == null) {
+            System.out.println("No solution found in this run");
+        } else {
+            System.out.println("Solution found at generation: " + solutionGeneration + " Solution: " + solutionChromosome.getChromosomeStringBuilder().toString());
+        }
 
-        // printPopulation(chromosomes);
+        printPopulation(chromosomes);
 
 /*
         for(int i = 0; i < averageFitnessPerGeneration.length; i ++) {

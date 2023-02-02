@@ -3,7 +3,7 @@ public class Chromosome {
     private StringBuilder chromosomeStringBuilder;
     private int fitness;
 
-    public static final String solution = "101010101010101010101010101010";
+    public static final String solution = "111111111111111111111111111111";
 
     private int chromosomeLength;
     public Chromosome (int chromosomeLength) {
@@ -21,10 +21,16 @@ public class Chromosome {
     public void calculateFitness() {
         fitness = 0;
         for(int i = 0; i < chromosomeStringBuilder.length(); i++) {
-            if(chromosomeStringBuilder.charAt(i) == solution.charAt(i)) {
+            if(chromosomeStringBuilder.charAt(i) == '1') {
                 fitness++;
             }
         }
+
+        // solution contains only 0's
+        if(fitness == 0) {
+            fitness = 2 * (chromosomeLength);
+        }
+
         this.fitness = fitness;
     }
 
