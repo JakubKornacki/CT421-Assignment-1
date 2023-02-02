@@ -50,9 +50,6 @@ public class GeneticAlgorithm  {
             chromosomes.add(temp);
         }
 
-        chromosomes.set(0, new Chromosome( new StringBuilder("000000000000000000000000000000")));
-        chromosomes.get(0).calculateFitness();
-
 
         while ((generation < generations)) {
 
