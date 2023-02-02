@@ -17,7 +17,7 @@ public class Chromosome {
     }
 
 
-    // fitness is the sum of all 1's in the chromosome
+    // fitness is the sum of all characters that match the solution when compared character by character
     public void calculateFitness() {
         fitness = 0;
         for(int i = 0; i < chromosomeStringBuilder.length(); i++) {
@@ -25,11 +25,6 @@ public class Chromosome {
                 fitness++;
             }
         }
-        // if there are no 1's in the solution then set the fitness to be 2 * solution length
-        if(fitness == 0) {
-            fitness = 2 * chromosomeLength;
-        }
-
         this.fitness = fitness;
     }
 
