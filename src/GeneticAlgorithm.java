@@ -33,7 +33,7 @@ public class GeneticAlgorithm  {
     public void printPopulation(ArrayList<Chromosome> array) {
         StringBuilder output = new StringBuilder();
         for(Chromosome ch : array) {
-            output.append("Chromosome: " +ch.getChromosomeStringBuilder().toString() + " Fitness: " + ch.getFitness() + "\n");
+            output.append("Chromosome: " +ch.getChromosome().toString() + " Fitness: " + ch.getFitness() + "\n");
         }
         System.out.println(output.toString());
     }
@@ -69,14 +69,11 @@ public class GeneticAlgorithm  {
                 Chromosome ch1 = reproduction.get(randIndex1);
                 Chromosome ch2 = reproduction.get(randIndex2);
 
-                // StringBuilder representations of chromosomes for reproduction
-                StringBuilder strBuildCh1 = ch1.getChromosomeStringBuilder();
-                StringBuilder strBuildCh2 = ch2.getChromosomeStringBuilder();
 
                 // select a random crossover point and create a new chromosome by crossover of 2 chromosomes from the reproduction list
                 if (Math.random() <= crossoverRate) {
                     int crossoverPoint = (int) ((Math.random() * (chromosomeLength-1 - 1)) + 1);
-                    newPopulation.add(Chromosome.crossover(strBuildCh1, strBuildCh2, crossoverPoint));
+                    newPopulation.add(Chromosome.crossover(ch1, ch2, crossoverPoint));
                     crossover = true;
                 }
 
@@ -85,15 +82,14 @@ public class GeneticAlgorithm  {
                     if(newPopulation.size() != 0) {
                         int mutationIndex = newPopulation.size() - 1;
                         Chromosome latestChromosome = newPopulation.get(mutationIndex);
-                        newPopulation.set(mutationIndex, Chromosome.mutate(latestChromosome.getChromosomeStringBuilder(), latestChromosome.getGenes()));
+                        newPopulation.set(mutationIndex, Chromosome.mutate(latestChromosome, latestChromosome.getGenes()));
                     }
                 }
 
                 // create a random chromosome if crossover did not happen at this iteration
                 if(!(crossover)) {
-                    Chromosome newChromosome = new Chromosome(chromosomeLength);
-                    newChromosome.generateRandomChromosome();
-                    newPopulation.add(newChromosome);
+                    newPopulation.add(chromosomeIndex, new Chromosome())
+                    newPopulation.get(chromosomeIndex).generateRandomChromosome();
                 }
 
                 crossover = false;
@@ -129,7 +125,7 @@ public class GeneticAlgorithm  {
         //
         System.out.println("The best mapping evolved: ");
         for(Chromosome ch : bestMapping) {
-            System.out.println(ch.getChromosomeStringBuilder().toString() + " Fitness: " +  ch.getFitness());
+            System.out.println(ch.getChromosome().toString() + " Fitness: " +  ch.getFitness());
         }
 
         /*

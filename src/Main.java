@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        if(args.length < 3 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty()) {
-            System.out.println("Need to specify arguments: Generations (int), Crossover rate (float), Mutation Rate (float)");
+        if(args.length < 3 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty() || args[3].isEmpty()) {
+            System.out.println("Need to specify arguments: Generations (int), Population size (int) Crossover rate (float), Mutation Rate (float)");
             System.exit(1);
         }
 
@@ -15,6 +15,7 @@ public class Main {
         int generations = Integer.parseInt(args[0]);
         float crossoverRate = Float.parseFloat(args[1]);
         float mutationRate = Float.parseFloat(args[2]);
+        int populationSize = Integer.parseInt(args[3]);
 
         ArrayList<Chromosome> supervisors = new ArrayList<Chromosome>();
         ArrayList<Student> students = new ArrayList<Student>();
@@ -46,7 +47,7 @@ public class Main {
                 String[] data = line.split(delimiter);
                 String lecturerName = data[0];
                 int lecturerCapacity = Integer.parseInt(data[1]);
-                supervisors.add(new Chromosome(lecturerName,lecturerCapacity, students.size()));
+                supervisors.add(new Chromosome(lecturerName,lecturerCapacity, students.size(), supervisors.size()));
                 supervisors.get(supervisorIndex).generateRandomChromosome();
                 supervisors.get(supervisorIndex).calculateFitness(students);
                 supervisorIndex++;
@@ -59,8 +60,6 @@ public class Main {
 
 
 
-        // parse population size and throw NumberFormatException if contains chars other than numbers
-        int populationSize = supervisors.size();
         int chromosomeLength = students.size();
 
         GeneticAlgorithm ga = GeneticAlgorithm.createGA(populationSize, chromosomeLength, generations, crossoverRate, mutationRate, supervisors, students);
