@@ -1,9 +1,15 @@
+import java.util.ArrayList;
+
 public class Chromosome {
-    private StringBuilder genes = new StringBuilder("012345679");
+    private StringBuilder genes = new StringBuilder("01");
     private StringBuilder chromosomeStringBuilder;
     private int fitness;
 
-    public static final String solution = "643076163900584556552605539514";
+    private int supervisorId;
+
+    private int capacity;
+
+    private String supervisorName;
 
     private int chromosomeLength;
     public Chromosome (int chromosomeLength) {
@@ -11,22 +17,61 @@ public class Chromosome {
         this.chromosomeLength = chromosomeLength;
     }
 
+    public Chromosome(String supervisorName, int capacity, int chromosomeLength) {
+        this.supervisorName = supervisorName;
+        this.capacity = capacity;
+        this.chromosomeLength = chromosomeLength;
+        this.supervisorId = extractId(supervisorName);
+        chromosomeStringBuilder = new StringBuilder(chromosomeLength);
+
+    }
     public Chromosome (StringBuilder chromosome) {
         this.chromosomeStringBuilder = chromosome;
         this.chromosomeLength = chromosome.length();
     }
 
+    private int extractId(String supervisorName) {
+        String[] parts = supervisorName.split("_");
+        return Integer.parseInt(parts[1]);
+    }
 
     // fitness is the sum of all characters that match the solution when compared character by character
-    public void calculateFitness() {
+    public void calculateFitness(ArrayList<Student> students) {
         fitness = 0;
-        for(int i = 0; i < chromosomeStringBuilder.length(); i++) {
-            if(chromosomeStringBuilder.charAt(i) == solution.charAt(i)) {
-                fitness++;
+        int studentsConsidered = 0;
+        for(int i = 0; i < chromosomeLength; i++) {
+            // a gene is a 1 which means that the student under the index of that gene is considered in this mapping
+
+
+
+            // and if this is the only chromosome with a 1 at that position then add upp fitness
+            // student can only be assigned to one lecturer
+
+            if(chromosomeStringBuilder.charAt(i) == '1') {
+                // get the student and his preference list
+                Student student = students.get(i);
+                int[] preferenceList = student.getPreferenceList();
+                // sum up the preferences in this list to get the fitness and update the students considered counter for each student
+                for(int j = 0; i < preferenceList.length; i++) {
+                    fitness += preferenceList[j];
+                }
+                studentsConsidered++;
             }
         }
+        // if this solution involves more students than the capacity of this lecturer kill this chromosome and replace it with a new random one
+        if(studentsConsidered > capacity) {
+            chromosomeStringBuilder = replaceChromosome();
+        }
 
-        this.fitness = fitness;
+    }
+
+    private StringBuilder replaceChromosome() {
+        StringBuilder temp = new StringBuilder();
+        for(int i = 0; i < chromosomeLength; i++) {
+            int randIndex = (int) (Math.random() * genes.length());
+            temp.append(genes.charAt(randIndex));
+        }
+        return temp;
     }
 
     public StringBuilder getChromosomeStringBuilder() {
@@ -36,7 +81,7 @@ public class Chromosome {
 
     // generate the chromosome by randomly appending genes to it
     public void generateRandomChromosome() {
-        for(int i = 0; i < chromosomeStringBuilder.capacity(); i++) {
+        for(int i = 0; i < chromosomeLength; i++) {
             int randIndex = (int) (Math.random() * genes.length());
             chromosomeStringBuilder.append(genes.charAt(randIndex));
         }
@@ -45,21 +90,12 @@ public class Chromosome {
 
     // create a new chromosome from combining parts of two different chromosomes, split position of the chromosomes is the crossover point
     public static Chromosome crossover(StringBuilder ch1, StringBuilder ch2, int crossoverPoint) {
-        String temp = ch1.substring(0, crossoverPoint);
+        String temp1 = ch1.substring(0, crossoverPoint);
         String temp2 = ch2.substring(crossoverPoint, ch2.length());
-        return new Chromosome(new StringBuilder(temp+temp2));
+        return new Chromosome( new StringBuilder(temp1 + temp2));
     }
 
 
-    /*public static Chromosome mutate() {
-        int mutationPoint = (int) (Math.random() * chromosomeLength-1);
-        String toRemove = chromosome.substring(mutationPoint, mutationPoint+1);
-        StringBuilder localGenes = new StringBuilder(genes);
-        localGenes.deleteCharAt(localGenes.indexOf(toRemove));
-        int randIndex = (int) (Math.random() * localGenes.length());
-        chromosome.setCharAt(mutationPoint, localGenes.charAt(randIndex));
-        return this;
-    } */
 
     public static Chromosome mutate(StringBuilder ch1, StringBuilder genes) {
         // select a random mutation point
