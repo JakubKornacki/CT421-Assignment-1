@@ -106,12 +106,17 @@ public class GeneticAlgorithm  {
             newPopulation.clear();
             sumFitness = 0;
 
-           // System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
+            System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
             generation++;
         }
 
         System.out.println("The best mapping evolved: ");
         System.out.println(bestMapping.chromosomeToString() + "\tFitness: " +  bestMapping.getFitness());
+
+        for(int i = 0; i < averageFitnessPerGeneration.length; i++) {
+            System.out.print(averageFitnessPerGeneration[i] + ",");
+        }
+
 
     }
 
