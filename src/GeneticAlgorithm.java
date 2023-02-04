@@ -80,8 +80,8 @@ public class GeneticAlgorithm  {
                 // create a random chromosome if crossover did not happen at this iteration
                 if(!(crossover)) {
                     newPopulation.add(chromosomeIndex,new Chromosome(students.size(), supervisors.size()));
-                    newPopulation.get(chromosomeIndex).generateRandomChromosome();
                     newPopulation.get(chromosomeIndex).setCapacities(ch1.getCapacities());
+                    newPopulation.get(chromosomeIndex).generateRandomChromosome();
                 }
 
                 crossover = false;
@@ -106,16 +106,17 @@ public class GeneticAlgorithm  {
             newPopulation.clear();
             sumFitness = 0;
 
-            System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
+            // System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
+           //  System.out.println("Fitness of the best mapping for this generation " + bestMapping.getFitness());
             generation++;
         }
 
         System.out.println("The best mapping evolved: ");
         System.out.println(bestMapping.chromosomeToString() + "\tFitness: " +  bestMapping.getFitness());
 
-        for(int i = 0; i < averageFitnessPerGeneration.length; i++) {
+      /*  for(int i = 0; i < averageFitnessPerGeneration.length; i++) {
             System.out.print(averageFitnessPerGeneration[i] + ",");
-        }
+        } */
 
 
     }

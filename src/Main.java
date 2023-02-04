@@ -51,9 +51,7 @@ public class Main {
                 data = line.split(delimiter);
                 // read the capacities the supervisor
                 capacitiesOfSupervisors[supervisorIndex] = Integer.parseInt(data[1]);
-                //  ID's will be represented by values inside the chromosome cells (1 - supervisors.size()) and therefore is not parsed out here
                 supervisors.add(new Chromosome(students.size(), studentPreferences.length));
-                supervisors.get(supervisorIndex).generateRandomChromosome();
                 supervisorIndex++;
             }
         }
@@ -64,6 +62,7 @@ public class Main {
         // give each survivor a local copy of capacities for all lecturers (could probably have only one reference array instead)
         for(int i = 0; i < supervisors.size(); i++) {
             supervisors.get(i).setCapacities(capacitiesOfSupervisors);
+            supervisors.get(i).generateRandomChromosome();
         }
         int chromosomeLength = students.size();
 

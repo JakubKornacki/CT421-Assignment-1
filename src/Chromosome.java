@@ -40,40 +40,30 @@ public class Chromosome {
     }
 
 
-   public void calculateFitness(ArrayList<Student> students) {
+    public void calculateFitness(ArrayList<Student> students) {
         // reset the fitness at each method invocation
         fitness = 0;
         // create a reference array which holds the counts of students choosing to work with a particular supervisor
         int[] chromosomeCapacities = new int[capacities.length];
-
-        for(Student student : students) {
-            // get the preference list of the student currently considered
-            int [] preferences = student.getPreferenceList();
-            for (int studentIndex = 0; studentIndex < chromosome.length; studentIndex++) {
-                // if the lecturer is equal
-                if (chromosome[studentIndex] == student.getStudentId()) {
-                    // check to ensure index out of bounds exception does not occur
-                    // increase the fitness by the preference that the student has for the supervisor found in the chromosome array under index studentIndex
-                    // make sure to adjust indexes properly (student and supervisors IDs are in range (1 to list.size()) and reference arrays are int range (0 to list.size()-1)
-                    if(studentIndex == 0) {
-                        fitness += preferences[chromosome[studentIndex] -1];
-                    } else {
-                        fitness += preferences[chromosome[studentIndex - 1] - 1];
-                    }
-                    // increase the capacity count by 1 for the supervisor found in the chromosome array under index studentIndex
-                    chromosomeCapacities[chromosome[studentIndex]-1]++;
-                }
-            }
-
+        int[] preferences;
+        // for each student
+        for (int chromosomeIndex = 0; chromosomeIndex < chromosome.length; chromosomeIndex++) {
+            // get the student's preference list
+            preferences = students.get(chromosomeIndex).getPreferenceList();
+            // add the preference of this student towards the supervisor to the index
+            fitness += preferences[chromosome[chromosomeIndex] -1];
+            // update the array that keeps track of the capacities of supervisors for this genotype
+            chromosomeCapacities[chromosome[chromosomeIndex] -1]++;
         }
 
-       // check for exceeded capacities and penalise the chromosome by adding 30 to the fitness for each supervisor capacity exceeded
-       for(int j = 0; j < capacities.length; j++) {
-           if(chromosomeCapacities[j] > capacities[j]) {
-               fitness += 30;
-           }
-       }
+        // check for exceeded capacities and penalise the chromosome by adding 30 to the fitness for each supervisor capacity exceeded
+        for(int j = 0; j < capacities.length; j++) {
+            if(chromosomeCapacities[j] > capacities[j]) {
+                fitness += 30;
+            }
+        }
     }
+
 
     public int[] getChromosome() {
         return chromosome;
@@ -111,10 +101,11 @@ public class Chromosome {
     // create a new chromosome by mutation by copying the chromosome gene by gene and changing the gene[i] with a random gene if mutation has occurred
     public static Chromosome mutate(Chromosome ch1, float mutationRate) {
         int[] newChromosome = new int[ch1.chromosomeLength];
+        int randIndex;
         for(int i = 0; i < ch1.chromosomeLength; i++) {
             newChromosome[i] = ch1.getChromosome()[i];
             if(Math.random() <= mutationRate) {
-                int randIndex = new Random().nextInt(ch1.chromosomeLength);
+                randIndex = new Random().nextInt(ch1.chromosomeLength);
                 newChromosome[i] = ch1.getChromosome()[randIndex];
             }
         }
@@ -125,9 +116,6 @@ public class Chromosome {
         return fitness;
     }
 
-    public int[] getGenes(){
-        return genes;
-    }
 
     public String chromosomeToString(){
         StringBuilder temp = new StringBuilder();
