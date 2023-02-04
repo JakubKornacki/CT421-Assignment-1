@@ -3,8 +3,9 @@ import java.util.*;
 
 public class GeneticAlgorithm  {
 
-    private  ArrayList<Chromosome> supervisors;
     private ArrayList<Student> students;
+    private ArrayList<Chromosome> chromosomes;
+    private ArrayList<Chromosome> supervisors;
     private int populationSize;
     private int chromosomeLength;
     private int generations;
@@ -22,53 +23,43 @@ public class GeneticAlgorithm  {
         this.generations = generations;
         this.crossoverRate = crossoverRate;
         this.mutationRate = mutationRate;
-
-        averageFitnessPerGeneration = new float[generations-1];
-        this.supervisors = supervisors;
+        this.averageFitnessPerGeneration = new float[generations-1];
         this.students = students;
+        this.supervisors = supervisors;
+        this.chromosomes = new ArrayList<Chromosome>(populationSize);
         startSearch();
     }
 
-    // helper function to print chromosomes and their fitness of a population
-    public void printPopulation(ArrayList<Chromosome> array) {
-        StringBuilder output = new StringBuilder();
-        for(Chromosome ch : array) {
-            output.append("Chromosome: " +ch.getChromosome().toString() + " Fitness: " + ch.getFitness() + "\n");
-        }
-        System.out.println(output.toString());
-    }
 
     private void startSearch() {
         float sumFitness = 0;
         boolean crossover = false;
 
-        while ((generation < generations)) {
+        // generate initial population
+        for(int i = 0; i < populationSize; i++) {
+            Chromosome temp = new Chromosome(students.size(), supervisors.size());
+            temp.setCapacity(supervisors.get(0).getCapacities());
+            temp.generateRandomChromosome();
+            temp.calculateFitness(students);
+            chromosomes.add(temp);
+        }
+
+        while (generation < generations) {
 
             ArrayList<Chromosome> newPopulation = new ArrayList<Chromosome>();
 
             // sort the collection based on fitness in ascending order
-            Collections.sort(supervisors, new Comparator<Chromosome>() {
+            Collections.sort(chromosomes, new Comparator<Chromosome>() {
                 @Override
                 public int compare(Chromosome o1, Chromosome o2) {
                     return o1.getFitness() - o2.getFitness();
                 }
             });
 
-            // select top 5 % of the population and paste it into the list of chromosomes used for reproduction
-            int index = (int) (0.05 * populationSize);
-            ArrayList<Chromosome> reproduction = new ArrayList<Chromosome>(supervisors.subList(0, index));
+            Chromosome ch1 = chromosomes.get(0);
+            Chromosome ch2 = chromosomes.get(1);
 
             for(int chromosomeIndex = 0; chromosomeIndex < populationSize; chromosomeIndex++) {
-                // get random chromosomes from the reproduction list
-                int randIndex1 = 0, randIndex2 = 0;
-                do {
-                    randIndex1 = new Random().nextInt(reproduction.size());
-                    randIndex2 = new Random().nextInt(reproduction.size());
-                } while (randIndex1 != randIndex2);
-
-                Chromosome ch1 = reproduction.get(randIndex1);
-                Chromosome ch2 = reproduction.get(randIndex2);
-
 
                 // select a random crossover point and create a new chromosome by crossover of 2 chromosomes from the reproduction list
                 if (Math.random() <= crossoverRate) {
@@ -78,18 +69,19 @@ public class GeneticAlgorithm  {
                 }
 
                 // mutate the latest chromosome in the new population (Skip if the first chromosome in this population has not been created by crossover)
-                if (Math.random() <= mutationRate) {
-                    if(newPopulation.size() != 0) {
-                        int mutationIndex = newPopulation.size() - 1;
-                        Chromosome latestChromosome = newPopulation.get(mutationIndex);
-                        newPopulation.set(mutationIndex, Chromosome.mutate(latestChromosome, latestChromosome.getGenes()));
-                    }
+
+                if(newPopulation.size() != 0) {
+                    int mutationIndex = newPopulation.size() - 1;
+                    Chromosome latestChromosome = newPopulation.get(mutationIndex);
+                    newPopulation.set(mutationIndex, Chromosome.mutate(latestChromosome, mutationRate));
                 }
+
 
                 // create a random chromosome if crossover did not happen at this iteration
                 if(!(crossover)) {
-                    newPopulation.add(chromosomeIndex, new Chromosome())
+                    newPopulation.add(chromosomeIndex,new Chromosome(students.size(), supervisors.size()));
                     newPopulation.get(chromosomeIndex).generateRandomChromosome();
+                    newPopulation.get(chromosomeIndex).setCapacity(ch1.getCapacities());
                 }
 
                 crossover = false;
@@ -109,30 +101,20 @@ public class GeneticAlgorithm  {
 
 
             // calculate the average fitness of this generation
-            averageFitnessPerGeneration[generation-1] = sumFitness / supervisors.size();
+            averageFitnessPerGeneration[generation-1] = sumFitness / chromosomes.size();
 
-            supervisors = new ArrayList<Chromosome>(newPopulation);
+            chromosomes = new ArrayList<Chromosome>(newPopulation);
             newPopulation.clear();
-            reproduction.clear();
             sumFitness = 0;
 
            // System.out.println("Average fitness for generation " + generation + " = " + averageFitnessPerGeneration[generation-1]);
             generation++;
         }
 
-       // printPopulation(supervisors);
-
-        //
         System.out.println("The best mapping evolved: ");
         for(Chromosome ch : bestMapping) {
-            System.out.println(ch.getChromosome().toString() + " Fitness: " +  ch.getFitness());
+            System.out.println(ch.chromosomeToString() + "\t\t\tFitness: " +  ch.getFitness());
         }
-
-        /*
-        for(int i = 0; i < averageFitnessPerGeneration.length; i ++) {
-            System.out.print(averageFitnessPerGeneration[i] + ",");
-        }*/
-
     }
 
     public static GeneticAlgorithm createGA(int populationSize, int chromosomeLength, int generations, float crossoverRate, float mutationRate, ArrayList<Chromosome> supervisors, ArrayList<Student> students) {

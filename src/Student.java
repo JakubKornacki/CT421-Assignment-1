@@ -37,5 +37,7 @@ public class Student {
             return preferenceList;
         }
 
-
+    public int getStudentId() {
+        return studentId;
+    }
 }
