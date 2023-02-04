@@ -5,14 +5,14 @@ import java.util.Random;
 public class Chromosome {
     private int[] genes;
     private int[] chromosome;
-    private int[] capacity;
+    private int[] capacities;
     private int fitness;
     private int chromosomeLength;
 
     private int noOfSupervisors;
 
-    public Chromosome(int[] chromosome, int[] capacity, int noOfSupervisors) {
-        this.capacity = capacity;
+    public Chromosome(int[] chromosome, int[] capacities, int noOfSupervisors) {
+        this.capacities = capacities;
         this.chromosomeLength = chromosome.length;
         this.chromosome = chromosome;
         this.genes = generateGenes(noOfSupervisors);
@@ -26,10 +26,11 @@ public class Chromosome {
         this.noOfSupervisors = noOfSupervisors;
     }
 
-    public void setCapacity(int[] capacity) {
-        this.capacity = capacity;
+    public void setCapacities(int[] capacities) {
+        this.capacities = capacities;
     }
 
+    // the genes are the all supervisor ID in range (1 to noOfSupervisors)
     public int[] generateGenes(int noOfSupervisors) {
         int[] temp = new int[noOfSupervisors];
         for(int i = 0; i < noOfSupervisors; i++) {
@@ -40,28 +41,38 @@ public class Chromosome {
 
 
    public void calculateFitness(ArrayList<Student> students) {
+        // reset the fitness at each method invocation
         fitness = 0;
-        // For each student s assigned to work with lecturer l, consider the preference p that the student had
-        // for that lecturer. Sum these preferences together. The lower the sum, the better the solution.
-        int studentsConsidered = 0;
+        // create a reference array which holds the counts of students choosing to work with a particular supervisor
+        int[] chromosomeCapacities = new int[capacities.length];
+
         for(Student student : students) {
+            // get the preference list of the student currently considered
             int [] preferences = student.getPreferenceList();
             for (int studentIndex = 0; studentIndex < chromosome.length; studentIndex++) {
                 // if the lecturer is equal
                 if (chromosome[studentIndex] == student.getStudentId()) {
-                    int lecturerIndex = chromosome[studentIndex]-1;
+                    // check to ensure index out of bounds exception does not occur
+                    // increase the fitness by the preference that the student has for the supervisor found in the chromosome array under index studentIndex
+                    // make sure to adjust indexes properly (student and supervisors IDs are in range (1 to list.size()) and reference arrays are int range (0 to list.size()-1)
                     if(studentIndex == 0) {
                         fitness += preferences[chromosome[studentIndex] -1];
                     } else {
                         fitness += preferences[chromosome[studentIndex - 1] - 1];
                     }
-                    studentsConsidered++;
+                    // increase the capacity count by 1 for the supervisor found in the chromosome array under index studentIndex
+                    chromosomeCapacities[chromosome[studentIndex]-1]++;
                 }
             }
-            if(studentsConsidered > capa)
 
-                studentsConsidered = 0;
         }
+
+       // check for exceeded capacities and penalise the chromosome by adding 30 to the fitness for each supervisor capacity exceeded
+       for(int j = 0; j < capacities.length; j++) {
+           if(chromosomeCapacities[j] > capacities[j]) {
+               fitness += 30;
+           }
+       }
     }
 
     public int[] getChromosome() {
@@ -69,7 +80,7 @@ public class Chromosome {
     }
 
     public int[] getCapacities() {
-        return capacity;
+        return capacities;
     }
 
 
@@ -82,7 +93,8 @@ public class Chromosome {
     }
 
 
-    // create a new chromosome from combining parts of two different chromosomes, split position of the chromosomes is the crossover point
+    // create a new chromosome from combining parts of two different chromosomes first part being all values less
+    // than crossover point and second part being all values greater or equal than to the crossover point
     public static Chromosome crossover(Chromosome ch1, Chromosome ch2, int crossoverPoint) {
         int[] newChromosome = new int[ch1.chromosomeLength];
         for(int i = 0; i < ch1.chromosomeLength; i++) {
@@ -92,11 +104,11 @@ public class Chromosome {
                 newChromosome[i] = ch2.getChromosome()[i];
             }
         }
-        return new Chromosome( newChromosome, ch1.capacity, ch1.noOfSupervisors);
+        return new Chromosome( newChromosome, ch1.capacities, ch1.noOfSupervisors);
     }
 
 
-
+    // create a new chromosome by mutation by copying the chromosome gene by gene and changing the gene[i] with a random gene if mutation has occurred
     public static Chromosome mutate(Chromosome ch1, float mutationRate) {
         int[] newChromosome = new int[ch1.chromosomeLength];
         for(int i = 0; i < ch1.chromosomeLength; i++) {
@@ -106,7 +118,7 @@ public class Chromosome {
                 newChromosome[i] = ch1.getChromosome()[randIndex];
             }
         }
-        return new Chromosome(newChromosome, ch1.capacity, ch1.noOfSupervisors);
+        return new Chromosome(newChromosome, ch1.capacities, ch1.noOfSupervisors);
     }
 
     public int getFitness() {

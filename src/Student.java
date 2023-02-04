@@ -11,13 +11,14 @@ public class Student {
             parseOutPreferenceList(preferenceList);
         }
 
-    // convert String representation of preferences to int
-    private void parseOutPreferenceList(String[] preferenceList) {
+        // convert String representation of preferences to int
+        private void parseOutPreferenceList(String[] preferenceList) {
             for(int i = 0; i < preferenceList.length; i++) {
                 this.preferenceList[i] = Integer.parseInt(preferenceList[i]);
             }
 
         }
+        // split the studentName String at "_" to parse out the ID
         private int extractId(String studentId) {
             String[] parts = studentId.split("_");
             return Integer.parseInt(parts[1]);

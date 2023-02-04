@@ -16,10 +16,8 @@ public class Main {
         int populationSize = Integer.parseInt(args[1]);
         float crossoverRate = Float.parseFloat(args[2]);
         float mutationRate = Float.parseFloat(args[3]);
-
         ArrayList<Chromosome> supervisors = new ArrayList<Chromosome>();
         ArrayList<Student> students = new ArrayList<Student>();
-
         String line = "";
         String delimiter = ";";
         String[] data;
@@ -35,7 +33,9 @@ public class Main {
             while ((line = br.readLine()) != null)
             {
                 data = line.split(delimiter);
+                // first cell is the student name
                 studentName = data[0];
+                // the rest is student preferences make sure to adjust the indexes when reading in the preferences
                 studentPreferences = new String[data.length-1];
                 for(int i = 0; i < data.length-1; i ++) {
                     studentPreferences[i] = data[i+1];
@@ -49,7 +49,9 @@ public class Main {
             while ((line = br2.readLine()) != null)
             {
                 data = line.split(delimiter);
+                // read the capacities the supervisor
                 capacitiesOfSupervisors[supervisorIndex] = Integer.parseInt(data[1]);
+                //  ID's will be represented by values inside the chromosome cells (1 - supervisors.size()) and therefore is not parsed out here
                 supervisors.add(new Chromosome(students.size(), studentPreferences.length));
                 supervisors.get(supervisorIndex).generateRandomChromosome();
                 supervisorIndex++;
@@ -59,9 +61,9 @@ public class Main {
         {
             e.printStackTrace();
         }
-
+        // give each survivor a local copy of capacities for all lecturers (could probably have only one reference array instead)
         for(int i = 0; i < supervisors.size(); i++) {
-            supervisors.get(i).setCapacity(capacitiesOfSupervisors);
+            supervisors.get(i).setCapacities(capacitiesOfSupervisors);
         }
         int chromosomeLength = students.size();
 
@@ -72,8 +74,6 @@ public class Main {
             System.exit(1);
         }
 
-
     }
-
 
 }

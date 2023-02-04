@@ -13,8 +13,8 @@ public class GeneticAlgorithm  {
     private float mutationRate;
 
     private int generation = 1;
-    private ArrayList<Chromosome> bestMapping;
-    private float bestSumFitnessScore = Float.MAX_VALUE;
+    private Chromosome bestMapping;
+    private float bestFitnessScore = Float.MAX_VALUE;
 
     private float[] averageFitnessPerGeneration;
     private GeneticAlgorithm(int populationSize, int chromosomeLength, int generations, float crossoverRate, float mutationRate, ArrayList<Chromosome> supervisors, ArrayList<Student> students) {
@@ -38,7 +38,7 @@ public class GeneticAlgorithm  {
         // generate initial population
         for(int i = 0; i < populationSize; i++) {
             Chromosome temp = new Chromosome(students.size(), supervisors.size());
-            temp.setCapacity(supervisors.get(0).getCapacities());
+            temp.setCapacities(supervisors.get(0).getCapacities());
             temp.generateRandomChromosome();
             temp.calculateFitness(students);
             chromosomes.add(temp);
@@ -56,12 +56,13 @@ public class GeneticAlgorithm  {
                 }
             });
 
+            // get two chromosomes which are the fittest (have the lowest fitness score)
             Chromosome ch1 = chromosomes.get(0);
             Chromosome ch2 = chromosomes.get(1);
 
             for(int chromosomeIndex = 0; chromosomeIndex < populationSize; chromosomeIndex++) {
 
-                // select a random crossover point and create a new chromosome by crossover of 2 chromosomes from the reproduction list
+                //  create a new chromosome by crossover from the two most fit chromosomes
                 if (Math.random() <= crossoverRate) {
                     int crossoverPoint = (int) ((Math.random() * (chromosomeLength-1 - 1)) + 1);
                     newPopulation.add(Chromosome.crossover(ch1, ch2, crossoverPoint));
@@ -69,7 +70,6 @@ public class GeneticAlgorithm  {
                 }
 
                 // mutate the latest chromosome in the new population (Skip if the first chromosome in this population has not been created by crossover)
-
                 if(newPopulation.size() != 0) {
                     int mutationIndex = newPopulation.size() - 1;
                     Chromosome latestChromosome = newPopulation.get(mutationIndex);
@@ -81,28 +81,27 @@ public class GeneticAlgorithm  {
                 if(!(crossover)) {
                     newPopulation.add(chromosomeIndex,new Chromosome(students.size(), supervisors.size()));
                     newPopulation.get(chromosomeIndex).generateRandomChromosome();
-                    newPopulation.get(chromosomeIndex).setCapacity(ch1.getCapacities());
+                    newPopulation.get(chromosomeIndex).setCapacities(ch1.getCapacities());
                 }
 
                 crossover = false;
             }
 
-            // update the fitness of the newly generated population and check whether the solution has been found
+            // update the fitness of the newly generated population and check for best solution so far
             for (Chromosome ch : newPopulation) {
                 ch.calculateFitness(students);
                 sumFitness += ch.getFitness();
+                // if the sum fitness of this population is the lowest so far then this is the best mapping generated so far
+                if(bestFitnessScore > ch.getFitness()) {
+                    bestFitnessScore = ch.getFitness();
+                    bestMapping = ch;
+                }
             }
-
-            // if the sum fitness of this population is the lowest so far then this is the best mapping generated so far
-            if(bestSumFitnessScore > sumFitness) {
-                bestSumFitnessScore = sumFitness;
-                bestMapping = (ArrayList<Chromosome>) newPopulation.clone();
-            }
-
 
             // calculate the average fitness of this generation
             averageFitnessPerGeneration[generation-1] = sumFitness / chromosomes.size();
 
+            // reset variables and assign the new population for next iteration
             chromosomes = new ArrayList<Chromosome>(newPopulation);
             newPopulation.clear();
             sumFitness = 0;
@@ -112,9 +111,8 @@ public class GeneticAlgorithm  {
         }
 
         System.out.println("The best mapping evolved: ");
-        for(Chromosome ch : bestMapping) {
-            System.out.println(ch.chromosomeToString() + "\t\t\tFitness: " +  ch.getFitness());
-        }
+        System.out.println(bestMapping.chromosomeToString() + "\tFitness: " +  bestMapping.getFitness());
+
     }
 
     public static GeneticAlgorithm createGA(int populationSize, int chromosomeLength, int generations, float crossoverRate, float mutationRate, ArrayList<Chromosome> supervisors, ArrayList<Student> students) {
