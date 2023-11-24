@@ -13,12 +13,8 @@ If we have a list of 10 students and 5 supervisors we can represent a randomly g
 chromosome as: [1][3][2][4][5][2][1][3][5][3]
 This would correspond to the below mapping where supervisor under Supervisor ID supervises
 all students under Student ID on the same row.
-Supervisor ID Student ID
-1 1, 7
-2 3, 6
-3 2, 8, 10
-4 4
-5 5, 9
+<br>
+<p align="center">
 |Supervisor ID     | Student ID |
 | ------------- |:-------------:|
 | 1 | 7 |
@@ -26,3 +22,4 @@ Supervisor ID Student ID
 | 3 | 2, 8, 10|
 | 4 | 4|
 | 5 | 5, 9|
+</p>
